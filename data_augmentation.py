@@ -1,76 +1,79 @@
+import cv2
+import random
 
-# Rather than generating and saving the new augmented data into the hardisk , we
-# we can do the data augemntation on the fly using inbuilt funtionalities in keras
+# IMAGE_SIZE = 200
+# images = []
+# img = cv2.imread('sintel1.png')
+# img2 = cv2.imread('test.jpg')
 #
-# -Using fit_generator instead of the fit, while training the cnn:
-# https://keras.io/models/sequential/
+# img = cv2.resize(img, (200,200))
+# img2 = cv2.resize(img2, (200,200))
 #
-# -Using the flow Method from the ImageDataGenerator of keras as a generator
-# https://keras.io/preprocessing/image/
-#
-# https://machinelearningmastery.com/image-augmentation-deep-learning-keras/
-
-from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
-import os
-datagen = ImageDataGenerator(
-        rotation_range=40,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True,
-        fill_mode='nearest')
-
-img = load_img('test.jpg')  # this is a PIL image
-x = img_to_array(img)  # this is a Numpy array with shape (3, 150, 150)
-print x.shape
-x = x.reshape
-x = x.reshape((1,) + x.shape)  # this is a Numpy array with shape (1, 3, 150, 150)
-print x.shape
-# the .flow() command below generates batches of randomly transformed images
-# and saves the results to the `preview/` directory
-i = 0
-os.makedirs('preview')
-for batch in datagen.flow(x, batch_size=1,
-                          save_to_dir='preview', save_prefix='cat', save_format='jpeg'):
-    i += 1
-    if i > 20:
-        break  # otherwise the generator would loop indefinitely
+# images.append(img)
+# images.append(img2)
 
 
-# # Save augmented images to file
-# from keras.datasets import mnist
-# from keras.preprocessing.image import ImageDataGenerator
-# from matplotlib import pyplot
-# import os
-# from keras import backend as K
-# K.set_image_dim_ordering('th')
-# # load data
-# (X_train, y_train), (X_test, y_test) = mnist.load_data()
-# # reshape to be [samples][pixels][width][height]
-# X_train = X_train.reshape(X_train.shape[0], 1, 28, 28)
-# X_test = X_test.reshape(X_test.shape[0], 1, 28, 28)
-# # convert from int to float
-# X_train = X_train.astype('float32')
-# X_test = X_test.astype('float32')
-# # define data preparation
-# datagen = ImageDataGenerator(
-#         rotation_range=40,
-#         width_shift_range=0.2,
-#         height_shift_range=0.2,
-#         shear_range=0.2,
-#         zoom_range=0.2,
-#         horizontal_flip=True,
-#         fill_mode='nearest')
-# # fit parameters from data
-# datagen.fit(X_train)
-# # configure batch size and retrieve one batch of images
-# os.makedirs('images')
-# for X_batch, y_batch in datagen.flow(X_train, y_train, batch_size=9, save_to_dir='images', save_prefix='aug', save_format='png'):
-# 	# create a grid of 3x3 images
-# 	for i in range(0, 9):
-# 		pyplot.subplot(330 + 1 + i)
-# 		pyplot.imshow(X_batch[i].reshape(28, 28), cmap=pyplot.get_cmap('gray'))
-# 	# show the plot
-# 	pyplot.show()
-# 	break
+def flip_operation(images):
+    ''' Takes a list of frames and flips all the frames either about the
+    horizontal axis or the vertical axis and returns the list of
+    augmented_images'''
+    augmented_images = []
+    randint = random.randint(0,1)
+    print randint
+    for image in images:
+        augmented_images.append(cv2.flip(image,randint))
+
+    return augmented_images
+
+def crop_images(images):
+    ''' Takes a list of frames and generates a randint(0,5) based on whose value
+    it will translate the image 20 percent in one of the 4 direactions and
+    returns the list of augmented_images'''
+
+    randint = random.randint(1,5)
+    # radinint = 5 , do nothing , randint = 1 , remove bottom 20 percent
+    # randint = 4, remove top 20 percent, randint = 2 , remove right 20 percent
+    # randint = 3. remove left 20 percent
+    print randint
+    augmented_images = []
+    #Saving the size of the image
+    x1=1        #Doubt 1 or 0
+    y1=1        #Doubt 1 or 0
+    x2=images[0].shape[1]
+    y2=images[0].shape[0]
+    if randint == 5:
+        return images
+    else:
+        if randint == 1 :
+            y2 = int(0.8*y2)
+        elif randint == 2 :
+            x2 = int(0.8*x2)
+        elif randint==3:
+            x1 = int(0.2*x2)
+        elif randint==4:
+            y1 = int(0.2*y2)
+        for image in images:
+            temp_img = image[y1:y2, x1:x2]
+            augmented_images.append(cv2.resize(temp_img, (200,200)))
+        return augmented_images;
+
+def augment_data(frames):
+    '''wrapper function which takes all the frames and randomly selects a
+    certain percentage of frames and either flips or crops the selected frame
+    and the next five frames'''
+    flip_percentage = 0.4
+    crop_percentage = 0.4
+
+    randint = random.randint(0,1)
+    if randint == 0:
+        return flip_operation(frames)
+    else
+        return crop_images(frames)
+
+
+# end_images = crop_images(images)
+# cv2.imshow("a1",images[0])
+# cv2.imshow("b1",images[1])
+# cv2.imshow("1",end_images[0])
+# cv2.imshow("2",end_images[1])
+# cv2.waitKey(0)
