@@ -1,13 +1,12 @@
-# Sample code for get flow as of now
-# To be replaced by preprocessing pipeline
+from get_frames import get_random_frames
+from kmeans import find_labels
+import pickle
 
-import cv2
-
-from get_flow import get_flow
-
-videoFile = "./datasets/UCF-101/ThrowDiscus/v_ThrowDiscus_g01_c02.avi"
-vidcap = cv2.VideoCapture(videoFile)
-
-frameNo = 100
-# Find flow for 20th frame
-get_flow(vidcap, frameNo, display=True)
+framelist = get_random_frames()
+trainsize = len(framelist) * 0.8
+labels, kmeans = find_labels(framelist)
+# Train using framelist[:trainsize] and labels[:trainsize]
+# Test using framelist[trainsize+1:] and labels[trainsize+1:]
+pickle.dump(framelist, open( "framelist.dump", "wb" ) )
+pickle.dump(labels, open( "labels.dump", "wb" ) )
+pickle.dump(kmeans, open( "kmeans.dump", "wb" ) )

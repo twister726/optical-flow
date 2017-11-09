@@ -40,7 +40,7 @@ def find_clusters(frames):
     kmeans.fit(data)
     return kmeans
 
-def find_labels():
+def find_labels(frames):
     '''Find the cluster number of every pixel of every frame'''
     frames = get_random_frames()
     kmeans = find_clusters(frames)
@@ -48,4 +48,4 @@ def find_labels():
     for frame in frames:
         flow = np.array(get_flow(VideoCapture(frame[0]), frame[1]))
         labels.append(np.reshape(kmeans.predict(np.reshape(flow, (400, 2))), (20, 20)))
-    return labels
+    return labels, kmeans

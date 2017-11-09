@@ -5,8 +5,8 @@ import random
 # Returns a list of tuples, first element of which is abspath of video file, second
 # element is list of frame numbers
 def get_random_frames():
-	TOTAL_FRAMES = 350000
-	basepath = './SMAI'
+	TOTAL_FRAMES = 350
+	basepath = './datasets/UCF-101'
 
 	action_names = os.listdir(basepath)
 	num_actions = len(action_names)
