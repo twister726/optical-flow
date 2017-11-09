@@ -22,12 +22,14 @@ def pick_random_frames(frames):
     get_random_frames() method) and calls get_flow() method to get the
     average flow of a frame and then calls pick_random_pixels()'''
     data = []
-    random_frames = random.sample(frames, len(frames)/10.0)
+    random_frames = random.sample(frames, len(frames) // 10)
     for frame in random_frames:
-        flow = np.array(get_flow(VideoCapture(frame[0]), frame[1]))
-        pixels = pick_random_pixels(flow)
-        for pixel in pixels:
-            data.append(pixel)
+        frame_numbers = random.sample(frame[1], len(frame[1]) // 10)
+        for frame_number in frame_numbers:
+            flow = np.array(get_flow(VideoCapture(frame[0]), frame_number))
+            pixels = pick_random_pixels(flow)
+            for pixel in pixels:
+                data.append(pixel)
     return data
 
 
