@@ -11,6 +11,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from read_flo import read_flo
 # from get_flow import get_flow
+import pickle
 
 
 def pick_random_pixel_flow(flows):
@@ -97,3 +98,7 @@ def find_labels(datapath):
         # flow = np.array(get_flow(VideoCapture(frame[0]), frame[1]))
         # labels.append(np.reshape(kmeans.predict(np.reshape(flow, (400, 2))), (20, 20)))
     return labels, kmeans
+
+labels, kmeans = find_labels('datasets/UCF-processed')
+pickle.dump(labels, open('labels.data', 'wb'))
+pickle.dump(kmeans, open('kmeans.data', 'wb'))

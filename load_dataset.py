@@ -1,14 +1,28 @@
 from keras.preprocessing.image import load_img, img_to_array
 import os
 import numpy as np
+import pickle
+from sklearn.cluster import KMeans
 
 from read_flo import read_flo
+
+kmeans = pickle.load( open('kmeans.data', 'rb') )
 
 def list_data(directory):
     return [(os.path.join(root, f),
                 os.path.join(root.replace('final', 'flow'), f.replace('.png', '.flo')))
             for root, _, files in os.walk(directory + '/final') for f in files
             if True]
+
+def transform_flow_to_out(flow):
+    outflow = np.empty([20, 20])
+    for i in range(20):
+        for j in range(20):
+            flowvec = np.empty([2])
+            flowvec[0] = np.average(flow[10*i:10*i+10, 10*j:10*j+10, 0])
+            flowvec[1] = np.average(flow[10*i:10*i+10, 10*j:10*j+10, 1])
+            outflow[i][j] = kmeans.predict(flowvec)
+    return outflow
 
 def random_crop((image, flow), crop_size):
     height, width = image.shape[1:]
@@ -30,7 +44,8 @@ def image_generator(list_of_files, crop_size):
         (cropped_img, cropped_flow) = random_crop((img, flow), crop_size)
         if cropped_img is None:
             continue
-        yield (cropped_img, cropped_flow)
+        out_flow = transform_flow_to_out(cropped_flow)
+        yield (cropped_img, out_flow)
 
 def group_by_batch(dataset, batch_size):
     while True:
@@ -41,7 +56,8 @@ def group_by_batch(dataset, batch_size):
         except:
             return
 
-def load_dataset(directory, crop_size, batch_size):
+def load_dataset(directory, batch_size):
+    crop_size = (200, 200)
     files = list_data(directory)
     generator = image_generator(files, crop_size)
     if batch_size != 1:
