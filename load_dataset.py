@@ -48,5 +48,5 @@ def load_dataset(directory, crop_size, batch_size):
         generator = group_by_batch(generator, batch_size)
     return generator
 
-for (image, flow) in load_dataset('datasets/Sintel/training'):
-    print(list_data('datasets/Sintel/training'))
+# for (image, flow) in load_dataset('datasets/Sintel/training'):
+#     print(list_data('datasets/Sintel/training'))

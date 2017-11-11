@@ -7,19 +7,13 @@ from deepmatching import deepmatching
 from deepflow2 import deepflow2
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 
-from show_flow import show_flow
+# from show_flow import show_flow
 
 def getflowbetnframe(im1, im2):
     matches = deepmatching(im1, im2)
     flow = deepflow2(im1, im2, matches, '-sintel')
-    outflow = np.empty([20, 20, 2])
-    for i in range(20):
-        for j in range(20):
-            outflow[i,j,0] = np.average(flow[10*i:10*i+10, 10*j:10*j+10, 0])
-            outflow[i,j,1] = np.average(flow[10*i:10*i+10, 10*j:10*j+10, 1])
-    return outflow
+    return flow
 
 def process_frame(image):
     image = cv2.resize(image, (200, 200))
@@ -44,5 +38,5 @@ def get_flow(vidcap, frame, display=False):
     for flow in flows:
         avgflow += flow
     avgflow = avgflow / len(succ_frames)
-    show_flow(image, succ_frames, flows)
-    return avgflow
+    # show_flow(image, succ_frames, flows)
+    return (image, avgflow)
