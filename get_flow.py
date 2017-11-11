@@ -3,17 +3,18 @@ sys.path.append('./lib/DeepFlow_release2.0')
 sys.path.append('./lib/deepmatching_1.2.2_c++')
 sys.path.append('./get_flow')
 
-from deepmatching import deepmatching
-from deepflow2 import deepflow2
+# from deepmatching import deepmatching
+# from deepflow2 import deepflow2
+from opencv_flow import getflowbetnframe
 import numpy as np
 import cv2
 
 # from show_flow import show_flow
 
-def getflowbetnframe(im1, im2):
-    matches = deepmatching(im1, im2)
-    flow = deepflow2(im1, im2, matches, '-sintel')
-    return flow
+# def getflowbetnframe(im1, im2):
+#     matches = deepmatching(im1, im2)
+#     flow = deepflow2(im1, im2, matches, '-sintel')
+#     return flow
 
 def process_frame(image):
     image = cv2.resize(image, (200, 200))

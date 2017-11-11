@@ -10,6 +10,8 @@ import pickle
 framelist = get_random_frames()
 random.shuffle(framelist)
 
+print(framelist)
+
 def safe_dir_create(path):
     dirpath = os.path.dirname(path)
     if not os.path.exists(dirpath):
