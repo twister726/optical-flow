@@ -23,17 +23,21 @@ try:
 except:
     pass
 
-def write_list(framelist, basedir):
-    for frame in framelist:
-        vidcap = cv2.VideoCapture(frame[0])
-        (image, flow) = get_flow(vidcap, frame[1])
-        impath = frame[0].replace('UCF-101', basedir + '/final') + frame[1] + ".png"
-        flowpath = frame[0].replace('UCF-101', basedir + '/flow') + frame[1] + ".flow"
-        safe_dir_create(impath)
-        safe_dir_create(flowpath)
-        cv2.imwrite(impath, image)
-        pickle.dump(flow, open( flowpath, "wb" ) )
+def write_frame(vidcap, basedir, path, frame):
+    (image, flow) = get_flow(vidcap, frame)
+    impath = path.replace('UCF-101', basedir + '/final') + frame + ".png"
+    flowpath = path.replace('UCF-101', basedir + '/flow') + frame + ".flow"
+    safe_dir_create(impath)
+    safe_dir_create(flowpath)
+    cv2.imwrite(impath, image)
+    pickle.dump(flow, open( flowpath, "wb" ) )
 
-trainsize = math.floor(len(framelist) * 0.8)
+def write_list(framelist, basedir):
+    for (path, frames) in framelist:
+        vidcap = cv2.VideoCapture(path)
+        for frameno in frames:
+            write_frame(vidcap, basedir, path, frameno)
+
+trainsize = int(math.floor(len(framelist) * 0.8))
 write_list(framelist[:trainsize], 'UCF-preprocessed/training')
 write_list(framelist[trainsize+1:], 'UCF-preprocessed/test')

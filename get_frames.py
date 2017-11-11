@@ -5,7 +5,7 @@ import random
 # Returns a list of tuples, first element of which is abspath of video file, second
 # element is list of frame numbers
 def get_random_frames():
-	TOTAL_FRAMES = 350
+	TOTAL_FRAMES = 35000
 	basepath = './datasets/UCF-101'
 
 	action_names = os.listdir(basepath)
