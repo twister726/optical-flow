@@ -7,7 +7,7 @@ sys.path.append('./get_flow')
 # from deepflow2 import deepflow2
 from opencv_flow import getflowbetnframe
 import numpy as np
-import cv2
+# import cv2
 
 # from show_flow import show_flow
 
@@ -27,7 +27,7 @@ def get_flow(vidcap, frame, display=False):
         raise ValueError('Frame not present in video')
     image = process_frame(image)
     succ_frames = []
-    for i in range(10):
+    for i in range(5):
         # vidcap.set(1, frame + i - 1)
         success, tmpimage = vidcap.read(1)
         if not success:

@@ -5,7 +5,7 @@ import random
 # Returns a list of tuples, first element of which is abspath of video file, second
 # element is list of frame numbers
 def get_random_frames():
-	TOTAL_FRAMES = 35000
+	TOTAL_FRAMES = 30000
 	basepath = './datasets/UCF-101'
 
 	action_names = os.listdir(basepath)
@@ -27,7 +27,7 @@ def get_random_frames():
 			filename = os.path.join(folder_path, video_name)
 			vidcap = cv2.VideoCapture(filename)
 			length = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
-			frame_numbers = random.sample(range(1, length), frames_per_clip)
+			frame_numbers = random.sample(range(1, length - 5), frames_per_clip)
 			final.append((os.path.abspath(filename), frame_numbers))
 
 	return final

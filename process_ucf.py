@@ -33,11 +33,14 @@ def write_frame(vidcap, basedir, path, frame):
     pickle.dump(flow, open( flowpath, "wb" ) )
 
 def write_list(framelist, basedir):
+    i = 0
+    length = len(framelist)
     for (path, frames) in framelist:
+        print('Video %d out of %d\n' % (i, length))
         vidcap = cv2.VideoCapture(path)
         for frameno in frames:
             write_frame(vidcap, basedir, path, frameno)
 
 trainsize = int(math.floor(len(framelist) * 0.8))
-write_list(framelist[:trainsize], 'UCF-preprocessed/training')
-write_list(framelist[trainsize+1:], 'UCF-preprocessed/test')
+write_list(framelist[:trainsize], 'UCF-processed/training')
+write_list(framelist[trainsize+1:], 'UCF-processed/test')
