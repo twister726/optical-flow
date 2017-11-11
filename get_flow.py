@@ -17,7 +17,7 @@ import cv2
 #     return flow
 
 def process_frame(image):
-    image = cv2.resize(image, (200, 200))
+    # image = cv2.resize(image, (200, 200))
     return np.array(image)
 
 def get_flow(vidcap, frame, display=False):
@@ -35,7 +35,7 @@ def get_flow(vidcap, frame, display=False):
         succ_frames.append(process_frame(tmpimage))
     print(len(succ_frames))
     flows = [getflowbetnframe(image, tmpframe) for tmpframe in succ_frames]
-    avgflow = np.zeros([20, 20, 2], dtype=np.float)
+    avgflow = np.zeros(flows[0].shape, dtype=np.float)
     for flow in flows:
         avgflow += flow
     avgflow = avgflow / len(succ_frames)

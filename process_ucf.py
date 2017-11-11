@@ -25,8 +25,8 @@ except:
 
 def write_frame(vidcap, basedir, path, frame):
     (image, flow) = get_flow(vidcap, frame)
-    impath = path.replace('UCF-101', basedir + '/final') + frame + ".png"
-    flowpath = path.replace('UCF-101', basedir + '/flow') + frame + ".flow"
+    impath = path.replace('UCF-101', basedir + '/final') + str(frame) + ".png"
+    flowpath = path.replace('UCF-101', basedir + '/flow') + str(frame) + ".flow"
     safe_dir_create(impath)
     safe_dir_create(flowpath)
     cv2.imwrite(impath, image)
