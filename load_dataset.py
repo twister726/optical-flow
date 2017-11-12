@@ -1,7 +1,10 @@
 from keras.preprocessing.image import load_img, img_to_array
+from keras.utils import np_utils
 import os
 import numpy as np
 import pickle
+import traceback
+import random
 from sklearn.cluster import KMeans
 
 from read_flo import read_flo
@@ -22,7 +25,7 @@ def transform_flow_to_out(flow):
             flowvec[0] = np.average(flow[10*i:10*i+10, 10*j:10*j+10, 0])
             flowvec[1] = np.average(flow[10*i:10*i+10, 10*j:10*j+10, 1])
             outflow[i][j] = kmeans.predict(flowvec.reshape(1, -1))
-    return outflow.reshape(400)
+    return np_utils.to_categorical(outflow.reshape(400), num_classes=40)
 
 def random_crop((image, flow), crop_size):
     height, width = image.shape[1:]
@@ -31,29 +34,39 @@ def random_crop((image, flow), crop_size):
         return None
     x = np.random.randint(0, width - dx + 1)
     y = np.random.randint(0, height - dy + 1)
-    return (image[:, y:(y+dy), x:(x+dx)], flow[:, y:(y+dy), x:(x+dx)])
+    return (image[:, y:(y+dy), x:(x+dx)], flow[x:(x+dx), y:(y+dy), :])
 
 def image_generator(list_of_files, crop_size):
     while True:
-        tup = np.random.choice(list_of_files)
+        tup = random.choice(list_of_files)
         try:
             img = img_to_array(load_img(tup[0]))
             flow = read_flo(tup[1])
         except:
+            traceback.print_exc()
+            continue
             return
+        # print(img.shape, flow.shape)
         (cropped_img, cropped_flow) = random_crop((img, flow), crop_size)
         if cropped_img is None:
             continue
+        # print(cropped_img.shape, cropped_flow.shape)
         out_flow = transform_flow_to_out(cropped_flow)
+        # print(cropped_img.shape, out_flow.shape)
         yield (cropped_img, out_flow)
 
 def group_by_batch(dataset, batch_size):
     while True:
+        print('group_by_batch')
         try:
             sources, targets = zip(*[next(dataset) for i in xrange(batch_size)])
+            print(targets[0].shape, len(targets))
             batch = (np.stack(sources), np.stack(targets))
+            # 32*400*onehotencoding
+            print(batch[1].shape)
             yield batch
         except:
+            traceback.print_exc()
             return
 
 def load_dataset(directory, batch_size):

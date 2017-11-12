@@ -9,7 +9,7 @@ from keras.layers import Conv2D, MaxPooling2D, ZeroPadding2D, Convolution2D
 from keras import backend as K
 from keras import initializers
 from keras.layers.core import Lambda, Reshape
-from customlayers import splittensor, crosschannelnormalization
+from customlayers import splittensor, LRN2D
 import pickle
 from load_dataset import load_dataset
 
@@ -19,7 +19,7 @@ def AlexNet():
     conv_1 = Convolution2D(96, 11, 11, subsample=(4, 4), activation='relu',
                            name='conv_1')(inputs)
 
-    conv_2 = crosschannelnormalization(name='convpool_1')(conv_1)
+    conv_2 = LRN2D(name='convpool_1')(conv_1)
     conv_2 = MaxPooling2D((3, 3), strides=(2, 2))(conv_2)
     conv_2 = ZeroPadding2D((2, 2))(conv_2)
     conv_2 = merge([
@@ -27,7 +27,7 @@ def AlexNet():
                            splittensor(ratio_split=2, id_split=i)(conv_2)
                        ) for i in range(2)], mode='concat', concat_axis=1, name='conv_2')
 
-    conv_3 = crosschannelnormalization()(conv_2)
+    conv_3 = LRN2D()(conv_2)
     conv_3 = MaxPooling2D((3, 3), strides=(2, 2))(conv_3)
     conv_3 = ZeroPadding2D((1, 1))(conv_3)
     conv_3 = Convolution2D(384, 3, 3, activation='relu', init='glorot_uniform', bias=True, name='conv_3')(conv_3)
@@ -52,7 +52,7 @@ def AlexNet():
     dense_2 = Dense(4096, activation='relu', name='dense_2')(dense_2)
     dense_3 = Dropout(0.5)(dense_2)
     dense_3 = Dense(16000, name='dense_3')(dense_3)
-    reshape = Reshape((16000, 40))(dense_3)
+    reshape = Reshape((400, 40))(dense_3)
     prediction = Activation('softmax', name='softmax')(reshape)
 
     model = Model(input=inputs, output=prediction)
@@ -79,7 +79,6 @@ img_rows, img_cols = 200, 200
 #     x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
 #     input_shape = (img_rows, img_cols, 1)
 
-train_set = load_dataset('datasets/Sintel/training', batch_size)
 
 # x_train = x_train.astype('float32')
 # x_test = x_test.astype('float32')
@@ -129,6 +128,10 @@ model = AlexNet()
 # model.add(Dense(128, activation='relu'))
 # model.add(Dropout(0.5))
 # model.add(Dense(num_classes, activation='softmax'))
+train_set = load_dataset('datasets/Sintel/training', batch_size)
+
+# for i in range(10):
+#     print(next(train_set))
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
@@ -139,8 +142,8 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 #           epochs=epochs,
 #           verbose=1,
 #           validation_data=(x_test, y_test))
-model.fit_generator(train_set, samples_per_epoch=batch_size * 500, nb_epoch=100)
+model.fit_generator(train_set, epochs=100, steps_per_epoch=500)
 # score = model.evaluate(x_test, y_test, verbose=0)
 # print('Test loss:', score[0])
 # print('Test accuracy:', score[1])
-pickle.dump(model, open('model.data', 'rb'))
+pickle.dump(model, open('model.data', 'wb'))
