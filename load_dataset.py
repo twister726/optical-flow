@@ -15,14 +15,14 @@ def list_data(directory):
             if True]
 
 def transform_flow_to_out(flow):
-    outflow = np.empty([20, 20])
+    outflow = np.empty([20, 20], dtype=np.int32)
     for i in range(20):
         for j in range(20):
             flowvec = np.empty([2])
             flowvec[0] = np.average(flow[10*i:10*i+10, 10*j:10*j+10, 0])
             flowvec[1] = np.average(flow[10*i:10*i+10, 10*j:10*j+10, 1])
-            outflow[i][j] = kmeans.predict(flowvec)
-    return outflow
+            outflow[i][j] = kmeans.predict(flowvec.reshape(1, -1))
+    return outflow.reshape(400)
 
 def random_crop((image, flow), crop_size):
     height, width = image.shape[1:]
