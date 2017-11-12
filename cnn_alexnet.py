@@ -1,6 +1,6 @@
 from __future__ import print_function
 import keras
-from theano import tensor as T
+# from theano import tensor as T
 from keras.datasets import mnist
 from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, Flatten, normalization, merge, Activation, \
