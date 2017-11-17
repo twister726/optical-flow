@@ -17,7 +17,8 @@ def list_data(directory):
             for root, _, files in os.walk(directory + '/final') for f in files
             if True]
 
-train_files = [], val_files = []
+train_files = []
+val_files = []
 def ldata(directory):
     global train_files, val_files
     if len(train_files) != 0:
@@ -59,9 +60,8 @@ def image_generator(list_of_files, crop_size):
             img = img_to_array(load_img(tup[0]))
             flow = read_flo(tup[1])
         except:
-            traceback.print_exc()
+            # traceback.print_exc()
             continue
-            return
         # print(img.shape, flow.shape)
         (cropped_img, cropped_flow) = random_crop((img, flow), crop_size)
         if cropped_img is None:
@@ -73,13 +73,13 @@ def image_generator(list_of_files, crop_size):
 
 def group_by_batch(dataset, batch_size):
     while True:
-        print('group_by_batch')
+        # print('group_by_batch')
         try:
             sources, targets = zip(*[next(dataset) for i in xrange(batch_size)])
-            print(targets[0].shape, len(targets))
+            # print(targets[0].shape, len(targets))
             batch = (np.stack(sources), np.stack(targets))
             # 32*400*onehotencoding
-            print(batch[1].shape)
+            # print(batch[1].shape)
             yield batch
         except:
             traceback.print_exc()
