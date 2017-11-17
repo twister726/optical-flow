@@ -17,12 +17,12 @@ import pickle
 def pick_random_pixel_flow(flows):
     '''Selects random pixels from a given flow'''
     # return random.sample(np.reshape(flow, (400, 2)), 40)
-    data = []
+    data = np.array([0.0, 0.0])
     for flow in flows:
         height = len(flow)
         width = len(flow[0])
-        data.append(random.sample(np.reshape(flow, (width*height, 2)), width*height//10))
-    return data
+        data = np.vstack((data, random.sample(np.reshape(flow, (width*height, 2)), width*height//10)))
+    return data[1:]
 
 
 # def pick_random_frames(frames):
@@ -99,6 +99,6 @@ def find_labels(datapath):
         # labels.append(np.reshape(kmeans.predict(np.reshape(flow, (400, 2))), (20, 20)))
     return labels, kmeans
 
-labels, kmeans = find_labels('datasets/UCF-processed')
+labels, kmeans = find_labels('datasets/UCF-processed/training')
 pickle.dump(labels, open('labels.data', 'wb'))
 pickle.dump(kmeans, open('kmeans.data', 'wb'))

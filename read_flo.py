@@ -3,8 +3,8 @@ import os
 import pickle
 
 def read_flo(fpath):
-    if os.path.exists(fpath + 'w'): # Numpy pickle dump for ucf preprocessed
-        return pickle.load( open(fpath + 'w', 'rb') )
+    if fpath.endswith('.npz'): # Numpy pickle dump for ucf preprocessed
+        return np.load(fpath)['arr_0']
     with open(fpath, 'rb') as f:
         magic = np.fromfile(f, np.float32, count=1)
         if 202021.25 != magic:
