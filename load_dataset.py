@@ -17,6 +17,22 @@ def list_data(directory):
             for root, _, files in os.walk(directory + '/final') for f in files
             if True]
 
+train_files = [], val_files = []
+def ldata(directory):
+    global train_files, val_files
+    if len(train_files) != 0:
+        return
+    for root, _, files in os.walk(directory + '/final'):
+        count = 0
+        for f in files:
+            imgpath = os.path.join(root, f)
+            flopath = os.path.join(root.replace('final', 'flow'), f.replace('.png', '.flo'))
+            if count > len(files) * 0.8:
+                val_files.append( (imgpath, flopath) )
+            else:
+                train_files.append( (imgpath, flopath) )
+
+
 def transform_flow_to_out(flow):
     outflow = np.empty([20, 20], dtype=np.int32)
     for i in range(20):
@@ -69,9 +85,11 @@ def group_by_batch(dataset, batch_size):
             traceback.print_exc()
             return
 
-def load_dataset(directory, batch_size):
+def load_dataset(directory, batch_size, wantVal=False):
+    global train_files, val_files
     crop_size = (200, 200)
-    files = list_data(directory)
+    ldata(directory)
+    files = val_files if wantVal else train_files
     generator = image_generator(files, crop_size)
     if batch_size != 1:
         generator = group_by_batch(generator, batch_size)
