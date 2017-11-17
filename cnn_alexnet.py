@@ -1,7 +1,7 @@
 from __future__ import print_function
 import keras
 # from theano import tensor as T
-from keras.datasets import mnist
+# from keras.datasets import mnist
 from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, Flatten, normalization, merge, Activation, \
                         Input
@@ -9,9 +9,18 @@ from keras.layers import Conv2D, MaxPooling2D, ZeroPadding2D, Convolution2D
 from keras import backend as K
 from keras import initializers
 from keras.layers.core import Lambda, Reshape
+from keras.callbacks import ModelCheckpoint
 from customlayers import splittensor, LRN2D
-import pickle
+import shutil
+import os
 from load_dataset import load_dataset
+
+try:
+    shutil.rmtree('weights', True)
+    os.makedirs('weights')
+except:
+    print('Could not create weights directory')
+    pass
 
 def AlexNet():
     inputs = Input(shape=(3, 200, 200))
@@ -129,6 +138,7 @@ model = AlexNet()
 # model.add(Dropout(0.5))
 # model.add(Dense(num_classes, activation='softmax'))
 train_set = load_dataset('datasets/Sintel/training', batch_size)
+val_set = load_dataset('datasets/Sintel/training', batch_size, wantVal=True)
 
 # for i in range(10):
 #     print(next(train_set))
@@ -137,13 +147,16 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
+checkpointer = ModelCheckpoint(filepath='weights/weights.{epoch:02d}-{val_acc:.2f}.hdf5', verbose=1)
+
 # model.fit(x_train, y_train,
 #           batch_size=batch_size,
 #           epochs=epochs,
 #           verbose=1,
 #           validation_data=(x_test, y_test))
-model.fit_generator(train_set, epochs=100, steps_per_epoch=500)
+model.fit_generator(train_set, epochs=100, steps_per_epoch=500,
+                    validation_data=val_set, validation_steps=100,
+                    callbacks=[checkpointer])
 # score = model.evaluate(x_test, y_test, verbose=0)
 # print('Test loss:', score[0])
 # print('Test accuracy:', score[1])
-pickle.dump(model, open('model.data', 'wb'))
