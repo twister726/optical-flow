@@ -1,5 +1,10 @@
+This project predicts and visualizes the future optical flow of an image. Predicts the future, if you will. 
+
+It is trained and tested on the MPI Sintel Dataset.
+
 # Directory structure
 ```
+
 datasets
 ├── Sintel
 │   ├── final
